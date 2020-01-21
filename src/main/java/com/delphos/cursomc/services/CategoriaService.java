@@ -1,12 +1,15 @@
 package com.delphos.cursomc.services;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import com.delphos.cursomc.domain.Categoria;
 import com.delphos.cursomc.repositories.CategoriaRepository;
+import com.delphos.cursomc.services.exception.DataIntegrityException;
 import com.delphos.cursomc.services.exception.ObjectNotFoundException;
 
 @Service
@@ -28,5 +31,20 @@ public class CategoriaService {
 	public Categoria update(Categoria obj) {
 		finder(obj.getId());
 		return repo.save(obj);
+	}
+	
+	public void delete (Integer id) {
+		finder(id);
+		try {
+			repo.deleteById(id);
+		}catch(DataIntegrityViolationException e ) {
+			
+			throw new DataIntegrityException("Não e possivel excluir uma categoria que possui produtos");
+		}
+		
+	}
+	
+	public List<Categoria> finderAll(){
+		return repo.findAll();
 	}
 }
