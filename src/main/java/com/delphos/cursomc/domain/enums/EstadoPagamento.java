@@ -2,7 +2,7 @@ package com.delphos.cursomc.domain.enums;
 
 public enum EstadoPagamento {
 	
-		PENDETE(1, "Pendete "),
+		PENDENTE(1, "Pendete "),
 		QUITADO(2, "Quitado "),
 		CANCELADO(3, "Cancelado");
 	
