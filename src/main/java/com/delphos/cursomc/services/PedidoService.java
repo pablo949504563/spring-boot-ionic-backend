@@ -10,6 +10,7 @@ import com.delphos.cursomc.domain.ItemPedido;
 import com.delphos.cursomc.domain.PagamentoComBoleto;
 import com.delphos.cursomc.domain.Pedido;
 import com.delphos.cursomc.domain.enums.EstadoPagamento;
+import com.delphos.cursomc.repositories.ClienteRepository;
 import com.delphos.cursomc.repositories.ItemPedidoRepository;
 import com.delphos.cursomc.repositories.PagamentoRepository;
 import com.delphos.cursomc.repositories.PedidoRepository;
@@ -34,6 +35,8 @@ public class PedidoService {
 	@Autowired
 	private ItemPedidoRepository itemPedidoRepository;
 	
+	@Autowired
+	private ClienteService clienteService;
 	
 	public Pedido finder(Integer id) {
 		Optional<Pedido> obj = repo.findById(id);
@@ -43,6 +46,7 @@ public class PedidoService {
 	public Pedido insert(Pedido obj) {
 		obj.setId(null);
 		obj.setInstante(new Date());
+		obj.setCliente(clienteService.finder(obj.getCliente().getId()));
 		obj.getPagamento().setEstado(EstadoPagamento.PENDENTE);
 		obj.getPagamento().setPedido(obj);
 		obj.getPagamento().setPedido(obj);
@@ -55,10 +59,12 @@ public class PedidoService {
 		pagamentoRepository.save(obj.getPagamento());
 		for(ItemPedido ip : obj.getItens()) {
 			ip.setDesconto(0.0);
-			ip.setPreco(produtoService.finder(ip.getProduto().getId()).getPreco());
+			ip.setProduto(produtoService.finder(ip.getProduto().getId()));
+			ip.setPreco(ip.getProduto().getPreco());
 			ip.setPedido(obj);
 		}
 		itemPedidoRepository.saveAll(obj.getItens());
+		System.out.println(obj);
 		return obj;
 	}
 }
